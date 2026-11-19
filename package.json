@@ -1,0 +1,40 @@
+{
+  "name": "medical-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Healthcare Management System REST API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "healthcare",
+    "express",
+    "postgresql",
+    "prisma",
+    "rest-api"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0",
+    "groq-sdk": "^0.7.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "prettier": "^3.3.0",
+    "prisma": "^6.0.0"
+  }
+}
