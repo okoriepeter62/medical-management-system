@@ -1,0 +1,23 @@
+﻿generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// TODO: Define models for the Healthcare Management System.
+// Suggested entities based on the project spec:
+// - User (patients and staff with roles: PATIENT, DOCTOR, NURSE, ADMIN, LAB_TECHNICIAN)
+// - PatientProfile / demographic details
+// - Appointment
+// - VitalSign
+// - MedicalRecord (consultation / SOAP notes)
+// - Prescription
+// - LabRequest / LabResult
+// - Invoice
+// - Payment
+// - AuditLog
+//
+// Team: Peter will implement schema details as needed.
