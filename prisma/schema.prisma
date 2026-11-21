@@ -1,12 +1,116 @@
-﻿generator client {
-  provider = "prisma-client-js"
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+} 
+
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  NURSE
+  PATIENT
+  LAB_TECHNICIAN
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+
+// ==========================================
+// USER MODEL
+// ==========================================
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  isActive     Boolean  @default(true)
+
+  emailVerifiedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  patientProfile PatientProfile?
+  staffProfile   StaffProfile?
+
+  @@map("users")
+}
+
+
+// ==========================================
+// PATIENT PROFILE
+// ==========================================
+
+model PatientProfile {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @db.Uuid
+
+  firstName String
+  lastName  String
+
+  dateOfBirth DateTime? @db.Date
+  gender      Gender?
+
+  phone   String?
+  address String?
+
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("patient_profiles")
+}
+
+
+// ==========================================
+// STAFF PROFILE
+// ==========================================
+
+model StaffProfile {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @db.Uuid
+
+  employeeId String @unique
+
+  firstName String
+  lastName  String
+
+  phone        String?
+  department   String?
+  specialization String?
+  licenseNumber  String?
+  hiredAt        DateTime? @db.Date
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("staff_profiles")
+}
 // TODO: Define models for the Healthcare Management System.
 // Suggested entities based on the project spec:
 // - User (patients and staff with roles: PATIENT, DOCTOR, NURSE, ADMIN, LAB_TECHNICIAN)

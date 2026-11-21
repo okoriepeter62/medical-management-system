@@ -1,10 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
-const routes = require('./routes');
-const errorMiddleware = require('./middlewares/error-middleware');
+import routes from './routes/index.js';
+import errorMiddleware from './middlewares/error-middleware.js';
 
 const app = express();
 
@@ -15,17 +15,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'ok', service: 'healthcare-management-system' });
+  res.status(200).json({
+    status: 'ok',
+    service: 'healthcare-management-system',
+  });
 });
 
 app.use('/api', routes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route not found: ${req.originalUrl}` });
+  res.status(404).json({
+    success: false,
+    message: `Route not found: ${req.originalUrl}`,
+  });
 });
 
 // Centralized error handler
 app.use(errorMiddleware);
 
-module.exports = app;
+export default app;
