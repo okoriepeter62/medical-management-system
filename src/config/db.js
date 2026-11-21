@@ -1,11 +1,12 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../generated/prisma/client.ts';
 
-// Prisma Client singleton for PostgreSQL.
-// TODO: Ensure `npx prisma generate` has been run after schema changes.
-const prisma = global.prisma || new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
 
-if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
-}
+const prisma = new PrismaClient({
+  adapter,
+});
 
-module.exports = prisma;
+export default prisma;
