@@ -9,7 +9,7 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // POST /api/billing/invoices (Nurse, Admin)
-exports.createInvoice = notImplemented('POST /api/billing/invoices');
+export const createInvoice = notImplemented('POST /api/billing/invoices');
 
 // GET /api/billing/invoices (Admin, Patient - patients can view their own)
-exports.getInvoices = notImplemented('GET /api/billing/invoices');
+export const getInvoices = notImplemented('GET /api/billing/invoices');

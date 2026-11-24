@@ -3,10 +3,10 @@
  * Base URL: /api/auth
  * Owner: Okorie Peter Chinecherem (#1)
  */
-const express = require('express');
-const authController = require('../controllers/auth-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as authController from '../controllers/auth-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
@@ -25,4 +25,4 @@ router.get('/me', authController.me);
 // PATCH /change-password - Allow users to change their passwords (Authenticated)
 router.patch('/change-password', authController.changePassword);
 
-module.exports = router;
+export default router;

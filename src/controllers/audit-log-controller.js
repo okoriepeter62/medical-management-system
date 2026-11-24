@@ -9,4 +9,4 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // GET /api/audit-logs (Admin)
-exports.getAuditLogs = notImplemented('GET /api/audit-logs');
+export const getAuditLogs = notImplemented('GET /api/audit-logs');

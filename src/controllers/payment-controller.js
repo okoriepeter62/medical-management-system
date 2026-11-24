@@ -10,10 +10,10 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // POST /api/payments/initialize (Patient)
-exports.initializePayment = notImplemented('POST /api/payments/initialize');
+export const initializePayment = notImplemented('POST /api/payments/initialize');
 
 // POST /api/payments/webhook (Payment Gateway)
-exports.paymentWebhook = notImplemented('POST /api/payments/webhook');
+export const paymentWebhook = notImplemented('POST /api/payments/webhook');
 
 // GET /api/payments/verify/:reference (Patient, Admin)
-exports.verifyPayment = notImplemented('GET /api/payments/verify/:reference');
+export const verifyPayment = notImplemented('GET /api/payments/verify/:reference');

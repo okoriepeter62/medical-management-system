@@ -3,10 +3,10 @@
  * Base URLs: /api/patients/:id/labs, /api/labs/:labId
  * Owner: Okorie Peter Chinecherem (#7)
  */
-const express = require('express');
-const labController = require('../controllers/lab-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as labController from '../controllers/lab-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 // Mounted at /api/patients/:id/labs
 const patientLabsRouter = express.Router({ mergeParams: true });
@@ -23,4 +23,4 @@ const labRouter = express.Router();
 // PATCH /:labId - Upload laboratory results and diagnostic files (Nurse, Doctor, Lab Technician)
 labRouter.patch('/:labId', labController.updateLabResult);
 
-module.exports = { patientLabsRouter, labRouter };
+export { patientLabsRouter, labRouter };

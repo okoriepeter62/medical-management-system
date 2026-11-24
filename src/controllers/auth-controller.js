@@ -9,16 +9,16 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // POST /api/auth/patient-signup (Public)
-exports.patientSignup = notImplemented('POST /api/auth/patient-signup');
+export const patientSignup = notImplemented('POST /api/auth/patient-signup');
 
 // POST /api/auth/register (Admin)
-exports.register = notImplemented('POST /api/auth/register');
+export const register = notImplemented('POST /api/auth/register');
 
 // POST /api/auth/login (Public)
-exports.login = notImplemented('POST /api/auth/login');
+export const login = notImplemented('POST /api/auth/login');
 
 // GET /api/auth/me (Authenticated)
-exports.me = notImplemented('GET /api/auth/me');
+export const me = notImplemented('GET /api/auth/me');
 
 // PATCH /api/auth/change-password (Authenticated)
-exports.changePassword = notImplemented('PATCH /api/auth/change-password');
+export const changePassword = notImplemented('PATCH /api/auth/change-password');

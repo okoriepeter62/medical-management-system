@@ -1,10 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
-const routes = require('./routes');
-const errorMiddleware = require('./middlewares/error-middleware');
+import routes from './routes/index.js';
+import errorMiddleware from './middlewares/error-middleware.js';
 
 const app = express();
 
@@ -28,4 +28,4 @@ app.use((req, res) => {
 // Centralized error handler
 app.use(errorMiddleware);
 
-module.exports = app;
+export default app;

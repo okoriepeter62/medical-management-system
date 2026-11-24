@@ -12,13 +12,13 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // POST /api/patients/:id/records (Doctor)
-exports.createRecord = notImplemented('POST /api/patients/:id/records');
+export const createRecord = notImplemented('POST /api/patients/:id/records');
 
 // GET /api/patients/:id/records (Doctor, Nurse, Patient Owner)
-exports.getPatientRecords = notImplemented('GET /api/patients/:id/records');
+export const getPatientRecords = notImplemented('GET /api/patients/:id/records');
 
 // GET /api/records/:recordId (Doctor, Nurse, Patient Owner)
-exports.getRecordById = notImplemented('GET /api/records/:recordId');
+export const getRecordById = notImplemented('GET /api/records/:recordId');
 
 // PATCH /api/records/:recordId (Doctor)
-exports.updateRecord = notImplemented('PATCH /api/records/:recordId');
+export const updateRecord = notImplemented('PATCH /api/records/:recordId');
