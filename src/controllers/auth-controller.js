@@ -1,24 +1,76 @@
-/**
- * Section 1: Authentication & Authorization
- * Base URL: /api/auth
- * Owner: Okorie Peter Chinecherem (#1)
- */
+import {
+  registerPatient,
+  loginUser,
+  createStaffAccount,
+  changeUserPassword,
+} from '../services/auth-service.js';
 
-const notImplemented = (name) => async (_req, res) => {
-  res.status(501).json({ success: false, message: `Not implemented: ${name}` });
+// Register a new patient
+export const patientSignup = async (req, res, next) => {
+  try {
+    const result = await registerPatient(req.body);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Patient account created successfully.',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-// POST /api/auth/patient-signup (Public)
-exports.patientSignup = notImplemented('POST /api/auth/patient-signup');
+// Register a staff member (Admin only)
+export const register = async (req, res, next) => {
+  try {
+    const result = await createStaffAccount(req.body);
 
-// POST /api/auth/register (Admin)
-exports.register = notImplemented('POST /api/auth/register');
+    return res.status(201).json({
+      success: true,
+      message: 'Staff account created successfully.',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-// POST /api/auth/login (Public)
-exports.login = notImplemented('POST /api/auth/login');
+// Login an existing user
+export const login = async (req, res, next) => {
+  try {
+    const result = await loginUser(req.body);
 
-// GET /api/auth/me (Authenticated)
-exports.me = notImplemented('GET /api/auth/me');
+    return res.status(200).json({
+      success: true,
+      message: 'Login successful.',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-// PATCH /api/auth/change-password (Authenticated)
-exports.changePassword = notImplemented('PATCH /api/auth/change-password');
+// Get the currently authenticated user
+export const me = async (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Authenticated user retrieved successfully.',
+    data: {
+      user: req.user,
+    },
+  });
+};
+
+// Change authenticated user's password
+export const changePassword = async (req, res, next) => {
+  try {
+    await changeUserPassword(req.user.id, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password changed successfully.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
