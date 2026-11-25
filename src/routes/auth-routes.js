@@ -3,26 +3,66 @@
  * Base URL: /api/auth
  * Owner: Okorie Peter Chinecherem (#1)
  */
+
 import express from 'express';
-import * as authController from '../controllers/auth-controller.js';
-// import { authenticate } from '../middlewares/auth-middleware.js';
-// import { authorizeRoles } from '../middlewares/role-middleware.js';
+
+import {
+  patientSignup,
+  register,
+  login,
+  me,
+  changePassword,
+} from '../controllers/auth-controller.js';
+
+import authenticate from '../middlewares/auth-middleware.js';
+import authorizeRoles from '../middlewares/role-middleware.js';
+import validate from '../middlewares/validation-middleware.js';
+
+import {
+  patientSignupSchema,
+  staffRegisterSchema,
+  loginSchema,
+  changePasswordSchema,
+} from '../Validations/auth-validation.js';
 
 const router = express.Router();
 
-// POST /patient-signup - Register a new patient account (Public)
-router.post('/patient-signup', authController.patientSignup);
+// POST /patient-signup - Public patient registration
+router.post(
+  '/patient-signup',
+  validate(patientSignupSchema),
+  patientSignup
+);
 
-// POST /register - Register doctors, nurses, and administrators (Admin)
-router.post('/register', authController.register);
+// POST /register - Admin-only staff registration
+router.post(
+  '/register',
+  authenticate,
+  authorizeRoles('ADMIN'),
+  validate(staffRegisterSchema),
+  register
+);
 
-// POST /login - Authenticate users and generate JWT token (Public)
-router.post('/login', authController.login);
+// POST /login - Public login
+router.post(
+  '/login',
+  validate(loginSchema),
+  login
+);
 
-// GET /me - Retrieve currently authenticated user's profile and role (Authenticated)
-router.get('/me', authController.me);
+// GET /me - Retrieve authenticated user's profile
+router.get(
+  '/me',
+  authenticate,
+  me
+);
 
-// PATCH /change-password - Allow users to change their passwords (Authenticated)
-router.patch('/change-password', authController.changePassword);
+// PATCH /change-password - Change authenticated user's password
+router.patch(
+  '/change-password',
+  authenticate,
+  validate(changePasswordSchema),
+  changePassword
+);
 
 export default router;

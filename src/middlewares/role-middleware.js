@@ -1,9 +1,24 @@
-// Role-based authorization middleware.
-// TODO: Restrict access based on user roles (PATIENT, DOCTOR, NURSE, ADMIN, LAB_TECHNICIAN).
+// Restrict access based on user roles
+const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    // Check whether authentication has been completed
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required.',
+      });
+    }
 
-export const authorizeRoles = (..._allowedRoles) => {
-  return (_req, _res, next) => {
-    // TODO: implement
+    // Check whether the user's role is permitted
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to perform this action.',
+      });
+    }
+
     next();
   };
 };
+
+export default authorizeRoles;

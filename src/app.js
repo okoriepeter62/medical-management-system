@@ -15,17 +15,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'ok', service: 'healthcare-management-system' });
+  res.status(200).json({
+    status: 'ok',
+    service: 'healthcare-management-system',
+  });
 });
 
 app.use('/api', routes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: `Route not found: ${req.originalUrl}` });
+  res.status(404).json({
+    success: false,
+    message: `Route not found: ${req.originalUrl}`,
+  });
 });
 
 // Centralized error handler
 app.use(errorMiddleware);
 
-export default app;
+module.exports = app;

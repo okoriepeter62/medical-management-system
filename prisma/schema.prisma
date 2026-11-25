@@ -1,23 +1,562 @@
-﻿generator client {
-  provider = "prisma-client-js"
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+} 
+
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  NURSE
+  PATIENT
+  LAB_TECHNICIAN
 }
 
-// TODO: Define models for the Healthcare Management System.
-// Suggested entities based on the project spec:
-// - User (patients and staff with roles: PATIENT, DOCTOR, NURSE, ADMIN, LAB_TECHNICIAN)
-// - PatientProfile / demographic details
-// - Appointment
-// - VitalSign
-// - MedicalRecord (consultation / SOAP notes)
-// - Prescription
-// - LabRequest / LabResult
-// - Invoice
-// - Payment
-// - AuditLog
-//
-// Team: Peter will implement schema details as needed.
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum AppointmentStatus {
+  REQUESTED
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum PrescriptionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum LabRequestStatus {
+  PENDING
+  SAMPLE_COLLECTED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum LabPriority {
+  ROUTINE
+  URGENT
+  STAT
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  PAYSTACK
+}
+
+
+// ==========================================
+// USER MODEL
+// ==========================================
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  isActive     Boolean  @default(true)
+
+  emailVerifiedAt DateTime?
+
+  createdAppointments Appointment[] @relation("AppointmentCreator")
+  recordedVitalSigns  VitalSign[]    @relation("VitalSignRecorder")
+
+  createdInvoices  Invoice[] @relation("InvoiceCreator")
+  recordedPayments Payment[] @relation("PaymentRecorder")
+
+  auditLogs AuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  patientProfile PatientProfile?
+  staffProfile   StaffProfile?
+
+  @@map("users")
+}
+
+
+// ==========================================
+// PATIENT PROFILE
+// ==========================================
+
+model PatientProfile {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @db.Uuid
+
+  firstName String
+  lastName  String
+
+  dateOfBirth DateTime? @db.Date
+  gender      Gender?
+
+  phone   String?
+  address String?
+
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[]
+  vitalSigns   VitalSign[]
+
+  medicalRecords MedicalRecord[]
+  prescriptions  Prescription[]
+  labRequests    LabRequest[]
+
+  invoices Invoice[]
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("patient_profiles")
+}
+
+
+// ==========================================
+// STAFF PROFILE
+// ==========================================
+
+model StaffProfile {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @db.Uuid
+
+  employeeId String @unique
+
+  firstName String
+  lastName  String
+
+  phone        String?
+  department   String?
+  specialization String?
+  licenseNumber  String?
+  hiredAt        DateTime? @db.Date
+
+  doctorAppointments Appointment[] @relation("AppointmentDoctor")
+  nurseAppointments  Appointment[] @relation("AppointmentNurse")
+
+  medicalRecords MedicalRecord[]
+  prescriptions  Prescription[]
+  requestedLabTests LabRequest[]
+  performedLabResults LabResult[]
+  medicalRecordAmendments MedicalRecordAmendment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("staff_profiles")
+}
+
+model Appointment {
+  id String @id @default(uuid()) @db.Uuid
+
+  patientId String @db.Uuid
+  doctorId  String? @db.Uuid
+  nurseId   String? @db.Uuid
+
+  createdById String @db.Uuid
+
+  scheduledAt     DateTime
+  durationMinutes Int @default(30)
+
+  reason  String
+  notes   String?
+
+  status AppointmentStatus @default(REQUESTED)
+
+  cancellationReason String?
+
+  medicalRecord MedicalRecord?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  doctor StaffProfile? @relation("AppointmentDoctor", fields: [doctorId], references: [id], onDelete: Restrict)
+
+  nurse StaffProfile? @relation("AppointmentNurse", fields: [nurseId], references: [id], onDelete: Restrict)
+
+  createdBy User @relation("AppointmentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([nurseId])
+  @@index([scheduledAt])
+  @@index([status])
+
+  @@map("appointments")
+}
+
+model VitalSign {
+  id String @id @default(uuid()) @db.Uuid
+
+  patientId String @db.Uuid
+  recordedById String @db.Uuid
+
+  systolicBloodPressure  Int?
+  diastolicBloodPressure Int?
+
+  temperature      Decimal? @db.Decimal(4, 1)
+  pulseRate        Int?
+  respiratoryRate  Int?
+  oxygenSaturation Decimal? @db.Decimal(5, 2)
+
+  heightCm Decimal? @db.Decimal(5, 2)
+  weightKg Decimal? @db.Decimal(5, 2)
+
+  notes String?
+
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  recordedBy User @relation("VitalSignRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([patientId])
+  @@index([recordedById])
+  @@index([recordedAt])
+
+  @@map("vital_signs")
+}
+
+model MedicalRecord {
+  id String @id @default(uuid()) @db.Uuid
+
+  patientId String @db.Uuid
+  doctorId  String @db.Uuid
+
+  appointmentId String? @unique @db.Uuid
+
+  diagnosis     String?
+  symptoms      String?
+  clinicalNotes String?
+  treatmentPlan String?
+
+  followUpDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  doctor StaffProfile @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+
+  appointment Appointment? @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+
+  prescriptions Prescription[]
+  labRequests   LabRequest[]
+  amendments MedicalRecordAmendment[]
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([createdAt])
+
+  @@map("medical_records")
+}
+
+model Prescription {
+  id String @id @default(uuid()) @db.Uuid
+
+  patientId      String @db.Uuid
+  prescribedById String @db.Uuid
+  medicalRecordId String @db.Uuid
+
+  medicationName String
+  dosage         String
+  frequency      String
+  route          String?
+  durationDays   Int?
+  quantity       Int?
+
+  instructions String?
+
+  status PrescriptionStatus @default(ACTIVE)
+
+  prescribedAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  prescribedBy StaffProfile @relation(fields: [prescribedById], references: [id], onDelete: Restrict)
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Restrict)
+
+  @@index([patientId])
+  @@index([prescribedById])
+  @@index([medicalRecordId])
+  @@index([status])
+
+  @@map("prescriptions")
+}
+
+model LabRequest {
+  id String @id @default(uuid()) @db.Uuid
+
+  patientId     String @db.Uuid
+  requestedById String @db.Uuid
+  medicalRecordId String? @db.Uuid
+
+  testName   String
+  description String?
+
+  priority LabPriority @default(ROUTINE)
+  status   LabRequestStatus @default(PENDING)
+
+  requestedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  requestedBy StaffProfile @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+
+  medicalRecord MedicalRecord? @relation(fields: [medicalRecordId], references: [id], onDelete: Restrict)
+
+  labResult LabResult?
+
+  @@index([patientId])
+  @@index([requestedById])
+  @@index([medicalRecordId])
+  @@index([status])
+
+  @@map("lab_requests")
+}
+
+model LabResult {
+  id String @id @default(uuid()) @db.Uuid
+
+  labRequestId String @unique @db.Uuid
+  performedById String @db.Uuid
+
+  resultText   String
+  findings     String?
+  referenceRange String?
+
+  attachmentUrl String?
+
+  completedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  labRequest LabRequest @relation(fields: [labRequestId], references: [id], onDelete: Restrict)
+
+  performedBy StaffProfile @relation(fields: [performedById], references: [id], onDelete: Restrict)
+
+  @@index([performedById])
+  @@index([completedAt])
+
+  @@map("lab_results")
+}
+
+model Invoice {
+  id String @id @default(uuid()) @db.Uuid
+
+  invoiceNumber String @unique
+
+  patientId  String @db.Uuid
+  createdById String? @db.Uuid
+
+  subtotal      Decimal @default(0) @db.Decimal(12, 2)
+  taxAmount     Decimal @default(0) @db.Decimal(12, 2)
+  discountAmount Decimal @default(0) @db.Decimal(12, 2)
+  totalAmount   Decimal @db.Decimal(12, 2)
+
+  amountPaid Decimal @default(0) @db.Decimal(12, 2)
+
+  currency String @default("NGN")
+
+  status InvoiceStatus @default(DRAFT)
+
+  issuedAt DateTime?
+  dueDate  DateTime?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  createdBy User? @relation("InvoiceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  items    InvoiceItem[]
+  payments Payment[]
+
+  @@index([patientId])
+  @@index([createdById])
+  @@index([status])
+  @@index([issuedAt])
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id String @id @default(uuid()) @db.Uuid
+
+  invoiceId String @db.Uuid
+
+  description String
+
+  quantity Int @default(1)
+
+  unitPrice Decimal @db.Decimal(12, 2)
+  lineTotal Decimal @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId])
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+
+  invoiceId String @db.Uuid
+
+  recordedById String? @db.Uuid
+
+  amount Decimal @db.Decimal(12, 2)
+
+  currency String @default("NGN")
+
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+
+  // Paystack transaction reference
+  providerReference String? @unique
+
+  transactionId String?
+
+  paymentDate DateTime?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  recordedBy User? @relation("PaymentRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId])
+  @@index([recordedById])
+  @@index([status])
+  @@index([paymentDate])
+
+  @@map("payments")
+}
+
+model AuditLog {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId String? @db.Uuid
+
+  action     String
+  resource   String
+  resourceId String?
+
+  description String?
+
+  ipAddress String?
+  userAgent String?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  // Relationship
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([resourceId])
+  @@index([createdAt])
+
+  @@map("audit_logs")
+}
+
+// ==========================================
+// MEDICAL RECORD AMENDMENTS
+// ==========================================
+
+model MedicalRecordAmendment {
+  id String @id @default(uuid()) @db.Uuid
+
+  medicalRecordId String @db.Uuid
+  amendedById     String @db.Uuid
+
+  reason       String
+  previousData Json
+  amendedData  Json
+
+  amendedAt DateTime @default(now())
+
+  // Relationships
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id], onDelete: Restrict)
+  amendedBy     StaffProfile  @relation(fields: [amendedById], references: [id], onDelete: Restrict)
+
+  @@index([medicalRecordId])
+  @@index([amendedById])
+  @@index([amendedAt])
+
+  @@map("medical_record_amendments")
+}
