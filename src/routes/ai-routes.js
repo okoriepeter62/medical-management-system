@@ -3,10 +3,10 @@
  * Base URL: /api/ai
  * Owner: Oniwon Faith #8
  */
-const express = require('express');
-const aiController = require('../controllers/ai-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as aiController from '../controllers/ai-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
@@ -19,4 +19,4 @@ router.post('/format-soap', aiController.formatSoap);
 // POST /simplify-instructions - Convert technical medical instructions into patient-friendly language (Doctor, Nurse)
 router.post('/simplify-instructions', aiController.simplifyInstructions);
 
-module.exports = router;
+export default router;

@@ -3,10 +3,10 @@
  * Base URL: /api/payments
  * Owner: Okorie Peter Chinecherem (#9)
  */
-const express = require('express');
-const paymentController = require('../controllers/payment-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as paymentController from '../controllers/payment-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
@@ -20,4 +20,4 @@ router.post('/webhook', paymentController.paymentWebhook);
 // GET /verify/:reference - Verify a transaction reference with the payment gateway (Patient, Admin)
 router.get('/verify/:reference', paymentController.verifyPayment);
 
-module.exports = router;
+export default router;

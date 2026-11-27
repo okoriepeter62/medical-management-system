@@ -34,4 +34,4 @@ app.use((req, res) => {
 // Centralized error handler
 app.use(errorMiddleware);
 
-export default app;
+module.exports = app;

@@ -3,10 +3,10 @@
  * Base URL: /api/patients
  * Owner: Okorie Peter Chinecherem (#3)
  */
-const express = require('express');
-const patientController = require('../controllers/patient-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as patientController from '../controllers/patient-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
@@ -25,4 +25,4 @@ router.patch('/:id', patientController.updatePatient);
 // PATCH /:id/status - Update patient hospital workflow status (Nurse, Doctor)
 router.patch('/:id/status', patientController.updatePatientStatus);
 
-module.exports = router;
+export default router;

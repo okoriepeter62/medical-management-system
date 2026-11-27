@@ -1,17 +1,17 @@
-const express = require('express');
+import express from 'express';
 
-const authRoutes = require('./auth-routes');
-const staffRoutes = require('./staff-routes');
-const patientRoutes = require('./patient-routes');
-const appointmentRoutes = require('./appointment-routes');
-const { patientVitalsRouter, vitalRouter } = require('./vitals-routes');
-const { patientRecordsRouter, recordRouter } = require('./record-routes');
-const { patientPrescriptionsRouter } = require('./prescription-routes');
-const { patientLabsRouter, labRouter } = require('./lab-routes');
-const aiRoutes = require('./ai-routes');
-const billingRoutes = require('./billing-routes');
-const paymentRoutes = require('./payment-routes');
-const auditLogRoutes = require('./audit-log-routes');
+import authRoutes from './auth-routes.js';
+import staffRoutes from './staff-routes.js';
+import patientRoutes from './patient-routes.js';
+import appointmentRoutes from './appointment-routes.js';
+import { patientVitalsRouter, vitalRouter } from './vitals-routes.js';
+import { patientRecordsRouter, recordRouter } from './record-routes.js';
+import { patientPrescriptionsRouter } from './prescription-routes.js';
+import { patientLabsRouter, labRouter } from './lab-routes.js';
+import aiRoutes from './ai-routes.js';
+import billingRoutes from './billing-routes.js';
+import paymentRoutes from './payment-routes.js';
+import auditLogRoutes from './audit-log-routes.js';
 
 const router = express.Router();
 
@@ -48,4 +48,4 @@ router.use('/payments', paymentRoutes); // /api/payments/*
 // Section 10 - Audit Logs & System Accountability (Faith, Even)
 router.use('/audit-logs', auditLogRoutes);
 
-module.exports = router;
+export default router;

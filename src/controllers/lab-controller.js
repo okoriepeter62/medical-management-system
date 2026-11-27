@@ -10,10 +10,10 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // POST /api/patients/:id/labs (Doctor)
-exports.requestLab = notImplemented('POST /api/patients/:id/labs');
+export const requestLab = notImplemented('POST /api/patients/:id/labs');
 
 // GET /api/patients/:id/labs (Doctor, Nurse, Patient Owner)
-exports.getPatientLabs = notImplemented('GET /api/patients/:id/labs');
+export const getPatientLabs = notImplemented('GET /api/patients/:id/labs');
 
 // PATCH /api/labs/:labId (Nurse, Doctor, Lab Technician)
-exports.updateLabResult = notImplemented('PATCH /api/labs/:labId');
+export const updateLabResult = notImplemented('PATCH /api/labs/:labId');

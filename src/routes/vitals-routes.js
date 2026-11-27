@@ -3,10 +3,10 @@
  * Base URLs: /api/patients/:id/vitals, /api/vitals/:vitalId
  * Owner: Okorie Peter Chinecherem (#5)
  */
-const express = require('express');
-const vitalsController = require('../controllers/vitals-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as vitalsController from '../controllers/vitals-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 // Mounted at /api/patients/:id/vitals
 const patientVitalsRouter = express.Router({ mergeParams: true });
@@ -23,4 +23,4 @@ const vitalRouter = express.Router();
 // PATCH /:vitalId - Correct an existing vital signs entry (Nurse, Doctor)
 vitalRouter.patch('/:vitalId', vitalsController.updateVital);
 
-module.exports = { patientVitalsRouter, vitalRouter };
+export { patientVitalsRouter, vitalRouter };

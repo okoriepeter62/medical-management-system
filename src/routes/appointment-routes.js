@@ -3,10 +3,10 @@
  * Base URL: /api/appointments
  * Owner: Oniwon Faith (#4)
  */
-const express = require('express');
-const appointmentController = require('../controllers/appointment-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as appointmentController from '../controllers/appointment-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
@@ -25,4 +25,4 @@ router.patch('/:id/reschedule', appointmentController.rescheduleAppointment);
 // PATCH /:id/cancel - Cancel an appointment with a cancellation reason
 router.patch('/:id/cancel', appointmentController.cancelAppointment);
 
-module.exports = router;
+export default router;

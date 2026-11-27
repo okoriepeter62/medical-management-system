@@ -9,10 +9,10 @@ const notImplemented = (name) => async (_req, res) => {
 };
 
 // POST /api/patients/:id/vitals (Nurse, Doctor)
-exports.recordVitals = notImplemented('POST /api/patients/:id/vitals');
+export const recordVitals = notImplemented('POST /api/patients/:id/vitals');
 
 // GET /api/patients/:id/vitals (Nurse, Doctor, Patient Owner)
-exports.getPatientVitals = notImplemented('GET /api/patients/:id/vitals');
+export const getPatientVitals = notImplemented('GET /api/patients/:id/vitals');
 
 // PATCH /api/vitals/:vitalId (Nurse, Doctor)
-exports.updateVital = notImplemented('PATCH /api/vitals/:vitalId');
+export const updateVital = notImplemented('PATCH /api/vitals/:vitalId');

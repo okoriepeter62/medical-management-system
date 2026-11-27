@@ -3,10 +3,10 @@
  * Base URL: /api/staff
  * Owner: Oniwon Faith (#2)
  */
-const express = require('express');
-const staffController = require('../controllers/staff-controller');
-// const { authenticate } = require('../middlewares/auth-middleware');
-// const { authorizeRoles } = require('../middlewares/role-middleware');
+import express from 'express';
+import * as staffController from '../controllers/staff-controller.js';
+// import { authenticate } from '../middlewares/auth-middleware.js';
+// import { authorizeRoles } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
@@ -22,4 +22,4 @@ router.patch('/:id', staffController.updateStaff);
 // DELETE /:id - Deactivate or suspend a staff account (Admin)
 router.delete('/:id', staffController.deactivateStaff);
 
-module.exports = router;
+export default router;
